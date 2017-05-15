@@ -33,7 +33,7 @@
     <div v-show="detailShow" class="detail">
       <div class="detail-wrapper clearfix">
         <div class="detail-main">
-          <h1>{{seller.name}}</h1>
+          <h1 class="name">{{seller.name}}</h1>
           <hr>
           <div v-for="item in seller.supports" class="support">
             <span class="icon" :class="classMap[item.type]"></span>
@@ -41,9 +41,11 @@
           </div>
           <hr>
           <p class="bulletin">{{seller.bulletin}}</p>
+          <p class="bulletin">{{seller.bulletin}}</p>
+          <p class="bulletin">{{seller.bulletin}}</p>
         </div>
       </div>
-      <div class="detail-close">
+      <div class="detail-close" @click="closeDetail">
         <i class="icon-close"></i>
       </div>
     </div>
@@ -65,6 +67,9 @@
     methods: {
       showDetail() {
         this.detailShow = true;
+      },
+      closeDetail() {
+        this.detailShow = false;
       }
     },
     created() {
@@ -75,6 +80,7 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "../../common/stylus/mixin.styl";
+  @import "../../common/stylus/base.styl";
   .header
     background: rgba(7, 17, 27, 0.5)
     color: #fff
@@ -89,7 +95,7 @@
           border-radius: 2px
       .content
         margin-left: 16px
-        font-size: 0px
+        font-size: 0
         .title
           display: flex
           margin: 2px 0 8px 0
@@ -195,13 +201,19 @@
       width: 100%
       height: 100%
       z-index: 100
-      overflow: hidden
+      overflow: auto
       background: rgba(7, 17, 27, 0.8)
       .detail-wrapper
         min-height: 100%
+        width: 100%
         .detail-main
           margin: 64px 36px 0 36px
           padding-bottom: 64px
+          .name
+            line-height: 16px
+            text-align: center
+            font-size: 16px
+            font-weight: 700
           .support
             margin: 24px 12px 28px 12px
             font-size: 12px
@@ -229,6 +241,7 @@
             line-height: 24px
             font-size: 12px
       .detail-close
-        margin-top: -64px;
+        margin-top: -64px
         text-align: center
+        font-size: 32px
 </style>
