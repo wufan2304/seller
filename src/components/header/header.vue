@@ -34,14 +34,19 @@
       <div class="detail-wrapper clearfix">
         <div class="detail-main">
           <h1 class="name">{{seller.name}}</h1>
-          <hr>
+          <div class="star-wrapper">
+            <star :size="48" :score="seller.score"></star>
+          </div>
+          <div class="title">
+            <div class="line"></div>
+            <div class="text"></div>
+            <div class="line"></div>
+          </div>
           <div v-for="item in seller.supports" class="support">
             <span class="icon" :class="classMap[item.type]"></span>
             <span class="text">{{item.description}}</span>
           </div>
           <hr>
-          <p class="bulletin">{{seller.bulletin}}</p>
-          <p class="bulletin">{{seller.bulletin}}</p>
           <p class="bulletin">{{seller.bulletin}}</p>
         </div>
       </div>
@@ -53,7 +58,11 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import star from 'components/star/star';
   export default {
+    components: {
+        star
+    },
     props: {
       seller: {
         type: Object
@@ -214,6 +223,10 @@
             text-align: center
             font-size: 16px
             font-weight: 700
+          .star-wrapper
+            margin-top: 18px
+            padding: 2px 0
+            text-align: center
           .support
             margin: 24px 12px 28px 12px
             font-size: 12px
