@@ -2,7 +2,8 @@
   <div class="goods">
     <div class="menu-wrapper" v-el:menu-wrapper>
       <ul>
-        <li class="menu-item" v-for="item in goods">
+        <li class="menu-item" v-for="item in goods" :class="{'current':currentIndex === $index}"
+            @click="selectMenu($index,$event)">
           <span class="text">
             <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>
             {{item.name}}
@@ -12,7 +13,7 @@
     </div>
     <div class="foods-wrapper" v-el:foods-wrapper>
       <ul>
-        <li v-for="item in goods" class="food-list">
+        <li v-for="item in goods" class="food-list food-list-hook">
           <h1 class="title">{{item.name}}</h1>
           <ul>
             <li v-for="food in item.foods" class="food-item">
@@ -23,8 +24,7 @@
                 <h2 class="name">{{food.name}}</h2>
                 <p class="desc">{{food.description}}</p>
                 <div class="extra">
-                  <span class="count">月售{{food.sellCount}}份</span>
-                  <span>好评率 {{food.rating}}%</span>
+                  <span class="count">月售{{food.sellCount}}份</span><span>好评率 {{food.rating}}%</span>
                 </div>
                 <div class="price">
                   <span class="now">¥{{food.price}}</span>
@@ -51,8 +51,23 @@
     },
     data() {
       return {
-        goods: []
+        goods: [],
+        listHeight: [],
+        scrollY: 0
       };
+    },
+    computed: {
+//      计算当前滚动到的高度，从而计算index
+      currentIndex() {
+        for (let i = 0; i < this.listHeight.length; i++) {
+          let height1 = this.listHeight[i];
+          let height2 = this.listHeight[i + 1];
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+//            console.log(i);
+            return i;
+          }
+        }
+      }
     },
     created() {
       this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
@@ -63,16 +78,47 @@
           this.goods = response.data;
           this.$nextTick(() => {
             this._initScroll();
+            this._calculateHeight();
           });
 //              console.log(this.goods);
         }
       });
     },
     methods: {
-        _initScroll() {
-          this.menuScroll = new BScroll(this.$els.menuWrapper, {});
-          this.foodsScroll = new BScroll(this.$els.foodsWrapper, {});
+      _initScroll() {
+        this.menuScroll = new BScroll(this.$els.menuWrapper, {
+          click: true
+        });
+        this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
+          probeType: 3
+        });
+        this.foodsScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(Math.round(pos.y));
+        });
+      },
+//      计算foodlist中DOM元素的高度
+      _calculateHeight() {
+        let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
+        let height = 0;
+//        console.log(foodList);
+        this.listHeight.push(height);
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i];
+          height += item.clientHeight;
+          this.listHeight.push(height);
         }
+//        console.log(this.listHeight);
+      },
+      selectMenu(index, event) {
+        if (!event._constructed) {
+          return;
+        }
+        let foodList = this.$els.foodsWrapper.getElementsByClassName('food-list-hook');
+        let el = foodList[index];
+        console.log(el);
+        this.foodsScroll.scrollToElement(el, 300);
+        console.log(index);
+      }
     }
   };
 </script>
@@ -90,13 +136,20 @@
       flex: 0 0 80px
       width: 80px
       background-color: #f3f5f7
+      font-weight: 200
       .menu-item
         height: 54px
         width: 56px
+        padding: 0 12px 0 12px
         line-height: 14px
         margin: 0 auto
         display: table
         border-1px(rgba(7, 17, 27, 0.2))
+        &.current
+          position: relative
+          z-index: 10
+          font-weight: 700
+          background: #fff
         .icon
           display: inline-block
           width: 12px
@@ -149,11 +202,11 @@
               margin-bottom: 8px
               font-size: 10px
               line-height: 12px
-              color: rgb(147,153,159)
+              color: rgb(147, 153, 159)
             .extra
               line-height: 10px
               font-size: 10px
-              color: rgb(147,153,159)
+              color: rgb(147, 153, 159)
               .count
                 margin-right: 12px
             .price
@@ -162,9 +215,9 @@
               .now
                 margin-right: 8px
                 font-size: 14px
-                color: rgb(240,20,20)
+                color: rgb(240, 20, 20)
               .old
                 text-decoration: line-through
                 font-size: 10px
-                color: rgb(147,153,159)
+                color: rgb(147, 153, 159)
 </style>
