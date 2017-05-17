@@ -33,10 +33,10 @@
       this.$http.get('/api/seller').then((response) => {
         response = response.body;
 
-        console.log(response);
+//        console.log(response);
         if (response.error === ERR_OK) {
           this.seller = response.data;
-          console.log(this.seller);
+//          console.log(this.seller);
         }
       });
     },
